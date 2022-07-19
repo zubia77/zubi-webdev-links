@@ -26,12 +26,12 @@ function App() {
 
     useEffect(() => {
         (async () => {
-            const response = await fetch(backend_base_url + '/maintain-login', {
-                method: 'POST',
+            const response = await fetch(backend_base_url + "/maintain-login", {
+                method: "POST",
                 headers: {
-                    'Content-Type': 'application/json',
-                    authorization: 'Bearer ' + localStorage.getItem('token')
-                }
+                    "Content-Type": "application/json",
+                    authorization: "Bearer " + localStorage.getItem("token"),
+                },
             });
             if (response.ok) {
                 const data = await response.json();
@@ -44,24 +44,28 @@ function App() {
     }, []);
 
     const handleLoginButton = async (e) => {
-      e.preventDefault();
-      const response = await fetch(backend_base_url + '/login', {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ username, password })
-      });
-      setUsername('');
-      setPassword('');
-      if (response.ok) {
-          const data = await response.json();
-          getLinklist();
-          setCurrentUser(data.user);
-          localStorage.setItem('token', data.token);
-      } else {
-          setMessage('bad login');
-      }
-  };
-   
+        e.preventDefault();
+        const response = await fetch(backend_base_url + "/login", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ username, password }),
+        });
+        setUsername("");
+        setPassword("");
+        if (response.ok) {
+            const data = await response.json();
+            getLinklist();
+            setCurrentUser(data.user);
+            localStorage.setItem("token", data.token);
+        } else {
+            setMessage("bad login");
+        }
+    };
+    const handleLogoutButton = () => {
+        localStorage.removeItem("token", "");
+        setCurrentUser({});
+    };
+
     return (
         <div className="App">
             <h1>Zubi's Webdev Links</h1>
@@ -77,6 +81,9 @@ function App() {
                             );
                         })}
                     </ul>
+                    <button className="logout" onClick={handleLogoutButton}>
+                        Logout
+                    </button>
                 </>
             ) : (
                 <form className="login" onSubmit={handleLoginButton}>
