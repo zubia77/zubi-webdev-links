@@ -25,9 +25,22 @@ function App() {
     };
 
     useEffect(() => {
-        if (userIsLoggedIn()) {
-            getLinklist();
-        }
+        (async () => {
+            const response = await fetch(backend_base_url + '/maintain-login', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    authorization: 'Bearer ' + localStorage.getItem('token')
+                }
+            });
+            if (response.ok) {
+                const data = await response.json();
+                setCurrentUser(data.user);
+                getLinklist();
+            } else {
+                setCurrentUser({});
+            }
+        })();
     }, []);
 
     const handleLoginButton = async (e) => {
@@ -43,6 +56,7 @@ function App() {
           const data = await response.json();
           getLinklist();
           setCurrentUser(data.user);
+          localStorage.setItem('token', data.token);
       } else {
           setMessage('bad login');
       }
