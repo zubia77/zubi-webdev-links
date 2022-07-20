@@ -1,6 +1,7 @@
 import { useState, useEffect } from "react";
 import "./App.css";
 import axios from "axios";
+import Linkform from "./components/Linkform.jsx";
 
 const backend_url = import.meta.env.VITE_BACKEND_URL;
 const backend_base_url = "http://localhost:3060";
@@ -19,7 +20,7 @@ function App() {
     const getLinklist = () => {
         (async () => {
             setLinkList(
-                (await axios.get(backend_base_url + "/linkLists")).data
+                (await axios.get(backend_base_url + "/linklists")).data
             );
         })();
     };
@@ -61,6 +62,18 @@ function App() {
             setMessage("bad login");
         }
     };
+
+    const handleDeleteLink = async () => {
+        const response = await fetch(backend_base_url + "/linklists:_id", {
+            method: "DELETE",
+        })
+        
+
+        if (response.ok) {
+          getLinklist();  
+        }
+    }
+
     const handleLogoutButton = () => {
         localStorage.removeItem("token", "");
         setCurrentUser({});
@@ -69,14 +82,19 @@ function App() {
     return (
         <div className="App">
             <h1>Zubi's Webdev Links</h1>
+
             {userIsLoggedIn() ? (
                 <>
+                    <Linkform />
                     <p>There are {linkList.length} links</p>
                     <ul>
                         {linkList.map((linkList, i) => {
                             return (
                                 <a key={i} href={linkList.url} target="_blank">
-                                    <li key={i}>{linkList.title}</li>
+                                    <li key={i}>
+                                        {linkList.title}
+                                        <button className="delete" onClick={handleDeleteLink}>X</button>
+                                    </li>
                                 </a>
                             );
                         })}

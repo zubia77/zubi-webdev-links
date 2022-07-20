@@ -20,7 +20,8 @@ body {
   margin-right: 3rem;
   width: 200px;
   height: 200px;
-  color: #970747
+  color: #970747;
+  position: relative;
   }
   h1{
   
@@ -35,5 +36,19 @@ body {
   p{
   color: #FEF4E8;
 
+  }
+  .delete{
+
+    background-color: #FEF4E8;
+    border: #970747 solid 2px;
+    border-radius:100%;
+    padding: 10px;
+    z-index: 99;
+    position: absolute;
+    top: 5px;
+    right: 5px;
+
+
+   
   }
   
