@@ -14,7 +14,7 @@ function App() {
     const [message, setMessage] = useState("");
 
     const userIsLoggedIn = () => {
-        return Object.keys(currentUser).length > 0;
+        return currentUser.username !== "anonymousUser";
     };
 
     const getLinklist = () => {
@@ -39,7 +39,22 @@ function App() {
                 setCurrentUser(data.user);
                 getLinklist();
             } else {
-                setCurrentUser({});
+                const response = await fetch(backend_base_url + "/login", {
+                    method: "POST",
+                    headers: { "Content-Type": "application/json" },
+                    body: JSON.stringify({
+                        username: "anonymousUser",
+                        password: "anonymousUser123",
+                    }),
+                });
+                if (response.ok) {
+                    const data = await response.json();
+                    getLinklist();
+                    setCurrentUser(data.user);
+                    localStorage.setItem("token", data.token);
+                } else {
+                    setMessage("bad login");
+                }
             }
         })();
     }, []);
@@ -63,62 +78,93 @@ function App() {
         }
     };
 
+    const currentUserIsInAccessGroup = (accessGroup) => {
+        if (currentUser.accessGroups) {
+            return currentUser.accessGroups.includes(accessGroup);
+        } else {
+            return false;
+        }
+    };
+
     const handleDeleteLink = async () => {
         const response = await fetch(backend_base_url + "/linklists:_id", {
             method: "DELETE",
-        })
-        
+        });
 
         if (response.ok) {
-          getLinklist();  
+            getLinklist();
         }
-    }
+    };
 
     const handleLogoutButton = () => {
-        localStorage.removeItem("token", "");
-        setCurrentUser({});
+        localStorage.removeItem("token");
+        setCurrentUser({ username: "anonymousUser" });
     };
 
     return (
         <div className="App">
             <h1>Zubi's Webdev Links</h1>
 
+            <div className="loggedInInfo">
+                {userIsLoggedIn() && (
+                    <div className="info">
+                        <div >
+                            {currentUserIsInAccessGroup("administrators") && (
+                                <div>info for administrators</div>
+                            )}
+                            {currentUserIsInAccessGroup("jobSeekers") && (
+                                <div>new job information for job seekers</div>
+                            )}
+                        </div>
+                        Logged in: {currentUser.firstName}{" "}
+                        {currentUser.lastName}
+                    </div>
+                )}
+            </div>
+
             {userIsLoggedIn() ? (
-                <>
+                <>  <button className="logout" onClick={handleLogoutButton}>
+                        Logout
+                    </button>
+                    <p className="infoLinks">There are {linkList.length} links</p>{" "}
+                  
                     <Linkform />
-                    <p>There are {linkList.length} links</p>
                     <ul>
                         {linkList.map((linkList, i) => {
                             return (
                                 <a key={i} href={linkList.url} target="_blank">
                                     <li key={i}>
                                         {linkList.title}
-                                        <button className="delete" onClick={handleDeleteLink}>X</button>
+                                        {/* <button
+                                            className="delete"
+                                            onClick={handleDeleteLink}
+                                        >
+                                            X
+                                        </button> */}
                                     </li>
                                 </a>
                             );
                         })}
                     </ul>
-                    <button className="logout" onClick={handleLogoutButton}>
-                        Logout
-                    </button>
                 </>
             ) : (
                 <form className="login" onSubmit={handleLoginButton}>
                     <div className="row">
-                        username:{" "}
+                        {" "}
                         <input
                             onChange={(e) => setUsername(e.target.value)}
                             value={username}
                             type="text"
+                            placeholder="Username..."
                         />
                     </div>
                     <div className="row">
-                        password:{" "}
+                        {" "}
                         <input
                             onChange={(e) => setPassword(e.target.value)}
                             value={password}
                             type="password"
+                            placeholder="Password..."
                         />
                     </div>
                     <div className="row">

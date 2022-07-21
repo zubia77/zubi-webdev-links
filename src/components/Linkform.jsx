@@ -32,32 +32,36 @@ const Linkform = () => {
 
     return (
         <form className="addALink" onSubmit={handleSubmit}>
-            <h3>Add a new link</h3>
-            <label>Name:</label>
-            <input
+            <h3 className="linkform">Add a new link</h3>
+            
+            <input className="linkform"
                 type="text"
                 onChange={(e) => setTitle(e.target.value)}
                 value={title}
+                placeholder="Name"
             />
-                 <label>URL:</label>
-            <input
+        
+            <input className="linkform"
                 type="text"
                 onChange={(e) => setUrl(e.target.value)}
                 value={url}
+                placeholder="URL"
             />
-                 <label>Description:</label>
-            <input
+                
+            <input className="linkform"
                 type="text"
                 onChange={(e) => setDescription(e.target.value)}
                 value={description}
+                placeholder="Description"
             />
-                 <label>Genre:</label>
-            <input
+                
+            <input className="linkform"
                 type="text"
                 onChange={(e) => setGenre(e.target.value)}
                 value={genre}
+                placeholder="Genre"
             />
-            <button>Hinzufügen</button>
+            <button>Add</button>
         </form>
     );
 };
